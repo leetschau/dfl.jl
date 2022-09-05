@@ -1,0 +1,7 @@
+name = "DistFileLib"
+uuid = "7935b0c1-0dd5-4556-96b4-2764704b9460"
+authors = ["Leo <leetschau@gmail.com>"]
+version = "0.1.0"
+
+[deps]
+PackageCompiler = "9b87118b-4619-50d2-8e1e-99f35a4d4d9d"
