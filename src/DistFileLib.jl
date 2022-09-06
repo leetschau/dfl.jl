@@ -1,11 +1,54 @@
 module DistFileLib
 
-function add(filepath)
-    print("add a new file: $(filepath)")
+using JSON
+
+datapath = joinpath(homedir(), ".config/dfl/database.json")
+
+struct FileRec
+    name ::String
+    tags :: Vector{String}
+    description :: String
+    size :: Int
+    hash :: String
+    relations :: Dict
+    topic :: String
 end
 
-function remove(id)
-    print("remove an existing file with ID $(id)")
+const DataSet = Dict{Int, FileRec}
+
+include("Utils.jl")
+
+function add(filepath::String;
+             tagline::String="",
+             desc::String="",
+             relations::String="",
+             topic::String="default")::Nothing
+    dataset = load_db(datapath)
+    id = create_id(dataset)
+    out, _ = exec(`md5sum $(filepath)`)
+    fhash = String(split(out, ' ')[1])
+
+    if hash_match(fhash, dataset)
+        println("File $filepath is already in the dataset")
+        return nothing
+    end
+
+    dataset[id] = FileRec(
+        basename(filepath),
+        split(tagline, ','),
+        desc,
+        filesize(filepath),
+        fhash,
+        Dict(),
+        topic
+    )
+
+    save_db(dataset, datapath)
+    println("File $(filepath) added to DFL.")
+end
+
+function remove(id::String)
+    println("remove an existing file with ID $(id)")
 end
 
 function julia_main()::Cint
@@ -14,9 +57,10 @@ function julia_main()::Cint
     elseif ARGS[1] == "del"
         remove(ARGS[2])
     else
-        print("Unknown command: $(ARGS[1])")
+        println("Unknown command: $(ARGS[1])")
     end
     return 0
 end
 
 end # module
+

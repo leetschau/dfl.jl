@@ -4,4 +4,5 @@ authors = ["Leo <leetschau@gmail.com>"]
 version = "0.1.0"
 
 [deps]
+JSON = "682c06a0-de6a-54ab-a142-c8b1cf79cde6"
 PackageCompiler = "9b87118b-4619-50d2-8e1e-99f35a4d4d9d"

@@ -4,6 +4,10 @@ Distributed Files Library (DFL for short) is a *logical file* (binary and plaint
 where a file's identity and description is recorded.
 You can search, filter (by tags or description), compare with "real" files on disk.
 
+## Prerequisites
+
+* Linux: `md5sum`
+
 ## Usage
 
 ```
