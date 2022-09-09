@@ -32,8 +32,11 @@ dfl del <ID>
 
 Features of a *file* in the library include:
 
-* ID: an auto-incremental integer, you can *link* to another file (in *relation* field defined below) by its ID
+* ID: an auto-incremental integer. A file can be *linked* to another file
+  (in *relation* field defined below) by its ID
 * Name: file name, string, optional
+* Path: disk & path of the physical file, format: [<org-name>-]<disk-name>/<path>,
+  e.g.: HS-Host10.162.2.83/cyberange/data/MTU1223.pcap
 * Tags: string list, optional
 * Description: string, optional
 * Size: integer (unit: byte)
@@ -43,3 +46,4 @@ Features of a *file* in the library include:
 
 Data is stored in a JSON file.
 
+Here *disk-name* in *path* entry above can be the name of either an U-disk or a host's IP address.

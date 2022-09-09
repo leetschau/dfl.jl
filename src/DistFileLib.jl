@@ -6,6 +6,7 @@ datapath = joinpath(homedir(), ".config/dfl/database.json")
 
 struct FileRec
     name ::String
+    path :: String
     tags :: Vector{String}
     description :: String
     size :: Int
@@ -47,8 +48,11 @@ function add(filepath::String;
     println("File $(filepath) added to DFL.")
 end
 
-function remove(id::String)
-    println("remove an existing file with ID $(id)")
+function remove(id::Int)::Nothing
+    dataset = load_db(datapath)
+    delete!(dataset, id)
+    save_db(dataset, datapath)
+    println("File #$(id) removed")
 end
 
 function julia_main()::Cint
