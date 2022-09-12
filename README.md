@@ -18,24 +18,31 @@ across different servers, U-disks.
 
 ## Usage
 
-### Build from scratch
-
 ```
-dfl init
-dfl set-current-disk mydisk
-dfl add <file-path>
-dfl del <ID>
+dfl --help
 ```
 
-### Build from scratch
+Examples:
 
-```
-dfl init git@github.com:leo/myfiles.git
-dfl list-disks  # list all existing disks
-dfl set-current-disk mydisk  # choose a disk callsign from above list
-dfl add <file-path>
-dfl del <ID>
-```
+* Build files repo from scratch:
+
+    ```
+    dfl init
+    dfl scdk mydisk
+    dfl add <file-path>
+    dfl upd <ID>
+    dfl del <ID>
+    ```
+
+* Build files repo from an existing repo:
+
+    ```
+    dfl init git@github.com:leo/myfiles.git
+    dfl lsdk  # list all existing disks
+    dfl scdk mydisk  # choose a disk callsign from above list
+    dfl add <file-path>
+    dfl del <ID>
+    ```
 
 ## API List
 
@@ -89,3 +96,35 @@ A *disk* in *path* entry above is defined by the following features:
 * Organization: which organization (company) this disk belongs to, or *personal*
 * URI: IP address of the host where disk mounted, optional
 * Description: short description about this disk
+
+# Development
+
+## Test in REPL
+
+    $ julia
+    julia> using Revise
+    julia> using DistFileLib
+    julia> DistFileLib.<funtion-name> <args...>
+    julia> DistFileLib.list_files()  # an example
+
+## Test in Console
+
+Add `julia_main()` into src/DistFileLib.jl, and run:
+
+    julia --project='.' src/DistFileLib.jl <command> <args...>
+
+for example:
+
+    julia --project='.' src/DistFileLib.jl add -h
+
+# Deployment
+
+```
+$ julia
+julia> using PackageCompiler
+julia> create_app(".", "build", incremental=false, executables=["dfl"=>"julia_main"])
+```
+
+The compiled binary is `$PROJ_HOME/build/bin/dfl`.
+
+
