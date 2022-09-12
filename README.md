@@ -4,29 +4,65 @@ Distributed Files Library (DFL for short) is a *logical file* (binary and plaint
 where a file's identity and description is recorded.
 You can search, filter (by tags or description), compare with "real" files on disk.
 
+Note that files managed by DFL are mostly *immutable* ones,
+whose contents won't change after added into DFL.
+By far files in DFL repo are mainly data files (pcap, csv, tgz) scattered
+across different servers, U-disks.
+
 ## Prerequisites
 
-* Linux: `md5sum`
+### Linux
+
+* `git`
+* `md5sum`
 
 ## Usage
 
+### Build from scratch
+
 ```
+dfl init
+dfl set-current-disk mydisk
+dfl add <file-path>
+dfl del <ID>
+```
+
+### Build from scratch
+
+```
+dfl init git@github.com:leo/myfiles.git
+dfl list-disks  # list all existing disks
+dfl set-current-disk mydisk  # choose a disk callsign from above list
 dfl add <file-path>
 dfl del <ID>
 ```
 
 ## API List
 
-* add: `add <file-path>`, add a file into the library. Return ID if it has been recorded.
-  Wildcards is allowed in <file-path>.
+### File API
+
+* init: `init [upsteam]`, pull an existing repo from remote,
+  or create a new repo from scratch
+* add: `add <file-path>`, add a file into the library.
+  Return ID if it has been recorded.  Wildcards is allowed in <file-path>.
 * delete: `delete <ID>`, remove a file from the library
+* list: `ls [num]`, list files in repo according to last updated time descendingly
 * search: `search [name|tags|desc|size|hash|id|topic] <search-string>`
-* edit: `edit [name|tags|desc|size|hash|id|topic] <ID>`,
-  edit features of a file with editor specified in env variable `EDITOR`
+* edit: `edit <ID>`, edit features of a file with editor specified
+  in env variable `EDITOR`
 * show: `show <ID>`, print detailed information of a file in human-readable format
-* compare: `compare <ID> <file-path>`. Show if src & dst are the same file, print differences if not.
+* compare: `compare <ID> <file-path>`. Show if src & dst are the same file,
+  print differences if not.
 * match: `match <file-path>`. Show if the file has been recorded in the library.
   Print ID of the matched file if that's the case.
+
+### Disk API
+
+* add-disk: 
+* del-disk:
+* edit-disk:
+* ls-disk:
+* set-current-disk:
 
 ## Data Structure
 
@@ -35,15 +71,21 @@ Features of a *file* in the library include:
 * ID: an auto-incremental integer. A file can be *linked* to another file
   (in *relation* field defined below) by its ID
 * Name: file name, string, optional
-* Path: disk & path of the physical file, format: [<org-name>-]<disk-name>/<path>,
-  e.g.: HS-Host10.162.2.83/cyberange/data/MTU1223.pcap
-* Tags: string list, optional
-* Description: string, optional
+* Path: disk & path of the physical file, format: <disk-id>:<path>,
+  e.g.: host83:/cyberange/data/MTU1223.pcap. A file can be stored on multiple disks.
 * Size: integer (unit: byte)
 * Hash: MD5 string
+* Tags: string list, optional
+* Description: string, optional
+* URI: the upstream URI/URL of this file, optional
 * Relations: dictionary (name, target), optional
-* Topic: string, a file should belongs to one and only one topic
+* Topic: string, a file should belongs to one and only one topic, optional
 
 Data is stored in a JSON file.
 
-Here *disk-name* in *path* entry above can be the name of either an U-disk or a host's IP address.
+A *disk* in *path* entry above is defined by the following features:
+
+* Callsign: a unique string represented this disk
+* Organization: which organization (company) this disk belongs to, or *personal*
+* URI: IP address of the host where disk mounted, optional
+* Description: short description about this disk

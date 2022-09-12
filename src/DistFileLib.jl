@@ -1,59 +1,54 @@
 module DistFileLib
 
 using JSON
+using Setfield
 
-datapath = joinpath(homedir(), ".config/dfl/database.json")
+rootpath = joinpath(homedir(), ".config/dfl")
+filespath = joinpath(rootpath, "files.json")
+diskspath = joinpath(rootpath, "disks.json")
+confspath = joinpath(rootpath, "local.json")
+
+json_indent = 2
 
 struct FileRec
+    id :: Int
     name ::String
-    path :: String
-    tags :: Vector{String}
-    description :: String
+    path :: Vector{String}
     size :: Int
     hash :: String
+    tags :: Vector{String}
+    description :: String
+    uri :: String
     relations :: Dict
     topic :: String
 end
 
-const DataSet = Dict{Int, FileRec}
+struct DiskRec
+    callsign :: String
+    organization :: String
+    uri :: String
+    description :: String
+end
+
+struct LocalConfs
+    current_disk :: String
+end
+
+const FileSet = Vector{FileRec}
+const DiskSet = Vector{DiskRec}
+
+function Base.show(io::IO, disks::DiskSet)
+    for i in disks
+        print("Callsign: $(i.callsign), ")
+        print("Organization: $(i.organization), ")
+        print("URI: $(i.uri), ")
+        println("Description: $(i.description)")
+    end
+end
 
 include("Utils.jl")
-
-function add(filepath::String;
-             tagline::String="",
-             desc::String="",
-             relations::String="",
-             topic::String="default")::Nothing
-    dataset = load_db(datapath)
-    id = create_id(dataset)
-    out, _ = exec(`md5sum $(filepath)`)
-    fhash = String(split(out, ' ')[1])
-
-    if hash_match(fhash, dataset)
-        println("File $filepath is already in the dataset")
-        return nothing
-    end
-
-    dataset[id] = FileRec(
-        basename(filepath),
-        split(tagline, ','),
-        desc,
-        filesize(filepath),
-        fhash,
-        Dict(),
-        topic
-    )
-
-    save_db(dataset, datapath)
-    println("File $(filepath) added to DFL.")
-end
-
-function remove(id::Int)::Nothing
-    dataset = load_db(datapath)
-    delete!(dataset, id)
-    save_db(dataset, datapath)
-    println("File #$(id) removed")
-end
+include("DiskCommands.jl")
+include("FileCommands.jl")
 
 function julia_main()::Cint
     if ARGS[1] == "add"
