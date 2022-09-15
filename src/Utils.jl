@@ -69,9 +69,6 @@ function save_files(fileset::FileSet, inpath::String)::Nothing
 end
 
 function save_disks(diskset::DiskSet, inpath::String)::Nothing
-    if isempty(diskset)
-        return nothing
-    end
     mkpath(dirname(inpath))
     open(inpath, "w") do f
         JSON.print(f, diskset, json_indent)

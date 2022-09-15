@@ -19,30 +19,32 @@ across different servers, U-disks.
 ## Usage
 
 ```
+git clone ... dfl
+julia --project='./dfl' -e 'using Pkg; Pkg.instantiate()'
+cat << EOF > ~/.local/bin/dfl
+#!/bin/bash
+
+PRJ_HOME=/cyberange/playground/DistFileLib
+julia --project=$PRJ_HOME $PRJ_HOME/src/DistFileLib.jl $@
+EOF
 dfl --help
 ```
 
-Examples:
+You can build files repo from scratch:
 
-* Build files repo from scratch:
-
-    ```
     dfl init
     dfl scdk mydisk
     dfl add <file-path>
     dfl upd <ID>
     dfl del <ID>
-    ```
 
-* Build files repo from an existing repo:
+Or build the repo from an existing repo:
 
-    ```
     dfl init git@github.com:leo/myfiles.git
     dfl lsdk  # list all existing disks
     dfl scdk mydisk  # choose a disk callsign from above list
     dfl add <file-path>
     dfl del <ID>
-    ```
 
 ## API List
 
@@ -122,9 +124,8 @@ for example:
 ```
 $ julia
 julia> using PackageCompiler
-julia> create_app(".", "build", incremental=false, executables=["dfl"=>"julia_main"])
+julia> create_app(".", "build", incremental=true, executables=["dfl"=>"julia_main"])
 ```
 
 The compiled binary is `$PROJ_HOME/build/bin/dfl`.
-
 

@@ -94,6 +94,32 @@ function parse_commandline()
             default = ""
     end
 
+    @add_arg_table settings["lsdk"] begin end
+
+    @add_arg_table settings["addk"] begin
+        "callsign"
+            help = "callsign of the disk to be added"
+            required = true
+        "organization"
+            help = "organization of the disk to be added"
+            required = false
+            default = ""
+        "uri"
+            help = "URI of the disk to be added"
+            required = false
+            default = ""
+        "description"
+            help = "description of the disk to be added"
+            required = false
+            default = ""
+    end
+
+    @add_arg_table settings["rmdk"] begin
+        "id"
+            help = "ID(callsign) of the disk to be removed"
+            required = true
+    end
+
     @add_arg_table settings["scdk"] begin
         "repo-path"
             help = "the remote repo path of the library"
@@ -116,19 +142,25 @@ function parse_commandline()
     return parse_args(ARGS, settings)
 end
 
-function julia_main()::Cint
+function main()
     parsed_args = parse_commandline()
-    println("Parsed args:")
-    for (arg,val) in parsed_args
-        println("  $arg  =>  $val")
+    if parsed_args["%COMMAND%"] == "init"
+        println("init")
+    elseif parsed_args["%COMMAND%"] == "lsdk"
+        list_disks()
+    elseif parsed_args["%COMMAND%"] == "addk"
+        add_disk(parsed_args["addk"]["callsign"],
+                 organization=parsed_args["addk"]["organization"],
+                 uri=parsed_args["addk"]["uri"],
+                 description=parsed_args["addk"]["description"])
+    elseif parsed_args["%COMMAND%"] == "rmdk"
+        remove_disk(parsed_args["rmdk"]["id"])
+    else
+        println("init")
     end
-
-    parsed_args = parse_commandline()
-    println(parsed_args)
-
-    return 0
 end
 
+main()
 
 end # module
 
